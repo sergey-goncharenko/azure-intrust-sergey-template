@@ -172,30 +172,22 @@
     "vmrole": [
       "DC",
       "INTR",
-      "Client",
-      "PS",
-      "ClientLinux"
+      "PS"
     ],
     "vmname": [
       "DC01",
       "INTR01",
-      "Cl01",
-      "PS01",
-      "Cl02"
+      "PS01"
     ],
     "vmDiskType": [
-      "Standard_LRS",
-      "Standard_LRS",
       "Standard_LRS",
       "Standard_LRS",
       "Standard_LRS"
     ],
     "vmSize": [
-      "Standard_D2d_v4",
-      "Standard_D2d_v4",
-      "Standard_D2d_v4",
-      "Standard_D2d_v4",
-      "Standard_D2d_v4"
+      "Standard_A1_v2",
+      "Standard_D4_v4",
+      "Standard_D4_v4"
     ],
     "imageReference": {
       "DC": {
@@ -210,22 +202,10 @@
         "sku": "2019-Datacenter",
         "version": "latest"
       },
-      "Client": {
-        "publisher": "MicrosoftWindowsDesktop",
-        "offer": "Windows-10",
-        "sku": "19h1-pro",
-        "version": "latest"
-      },
       "PS": {
         "publisher": "MicrosoftSQLServer",
         "offer": "SQL2017-WS2016",
         "sku": "Standard",
-        "version": "latest"
-      },
-      "ClientLinux": {
-        "publisher": "RedHat",
-        "offer": "RHEL",
-        "sku": "7-RAW",
         "version": "latest"
       }
     }
@@ -284,7 +264,7 @@
 		"priority": "Spot",
         "evictionPolicy": "Deallocate",
         "billingProfile": {
-                    "maxPrice": 0.02
+                    "maxPrice": 0.03
         }
       }
     },
@@ -295,7 +275,7 @@
       "location": "[parameters('location')]",
       "copy": {
         "name": "vmcopy",
-        "count": 4
+        "count": 3
       },
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/',toLower(parameters('prefix')),variables('vmname')[copyIndex()])]"
@@ -370,7 +350,7 @@
       "location": "[parameters('location')]",
       "copy": {
         "name": "nicopy",
-        "count": 5
+        "count": 3
       },
       "dependsOn": [
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
@@ -406,56 +386,10 @@
       "location": "[parameters('location')]",
       "copy": {
         "name": "ipcopy",
-        "count": 5
+        "count": 3
       },
       "properties": {
         "publicIpAllocationMethod": "[variables('networkSettings').publicIpAllocationMethod]"
-      }
-    },
-
-    {
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-06-01",
-      "name": "[concat(toLower(parameters('prefix')),toLower(variables('vmname')[3]))]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',toLower(parameters('prefix')),toLower(variables('vmname')[3]), '-ni')]"
-      ],
-      "properties": {
-        "osProfile": {
-          "computerName": "[concat(toLower(parameters('prefix')),toLower(variables('vmname')[3]))]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]",
-          "windowsConfiguration": {
-            "provisionVmAgent": "true"
-          }
-        },
-        "hardwareProfile": {
-          "vmSize": "[variables('vmSize')[3]]"
-        },
-        "storageProfile": {
-          "imageReference": "[variables('imageReference')[variables('vmrole')[3]]]",
-          "osDisk": {
-            "name": "[concat(toLower(parameters('prefix')),toLower(variables('vmname')[3]),'-OsDisk')]",
-            "createOption": "FromImage",
-            "managedDisk": {
-              "storageAccountType": "[variables('vmDiskType')[3]]"
-            }
-          },
-          "dataDisks": []
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(toLower(parameters('prefix')),toLower(variables('vmname')[3]), '-ni'))]"
-            }
-          ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": false
-          }
-        }
       }
     },
     {
@@ -479,71 +413,6 @@
             }
           }
         ]
-      }
-    },
-    {
-	  "condition": "[if(equals(parameters('deploymode'),'full'),bool('true'),if(equals(parameters('deploymode'),'nowin10'),bool('true'),bool('false')))]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-06-01",
-      "name": "[concat(toLower(parameters('prefix')),toLower(variables('vmname')[4]))]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',toLower(parameters('prefix')),toLower(variables('vmname')[4]), '-ni')]"
-      ],
-      "properties": {
-        "osProfile": {
-          "computerName": "[concat(toLower(parameters('prefix')),toLower(variables('vmname')[4]))]",
-          "adminUsername": "[parameters('adminUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "hardwareProfile": {
-          "vmSize": "[variables('vmSize')[4]]"
-        },
-        "storageProfile": {
-          "imageReference": "[variables('imageReference')[variables('vmrole')[4]]]",
-          "osDisk": {
-            "name": "[concat(toLower(parameters('prefix')),toLower(variables('vmname')[4]),'-OsDisk')]",
-            "createOption": "FromImage",
-            "managedDisk": {
-              "storageAccountType": "[variables('vmDiskType')[4]]"
-            }
-          },
-          "dataDisks": []
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(toLower(parameters('prefix')),toLower(variables('vmname')[4]), '-ni'))]"
-            }
-          ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": false
-          }
-        }
-      }
-    },
-    {
-	  "condition": "[if(equals(parameters('deploymode'),'full'),bool('true'),if(equals(parameters('deploymode'),'nowin10'),bool('true'),bool('false')))]",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(concat(toLower(parameters('prefix')),toLower(variables('vmname')[4])),'/configureintrustagent')]",
-      "apiVersion": "2015-06-15",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/',toLower(parameters('prefix')),variables('vmname')[4])]", "vmcopy"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Azure.Extensions",
-        "type": "CustomScript",
-        "typeHandlerVersion": "2.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "fileUris": [
-            "[Uri(parameters('_artifactsLocation'),concat('DSC/configureLinuxVM.sh',parameters('_artifactsLocationSasToken')))]"
-          ],
-          "commandToExecute": "[concat('bash configureLinuxVM.sh -a ',parameters('adminUsername'),' -p ',parameters('adminPassword'),' -i ',parameters('prefix'),variables('vmname')[1])]"
-        }
       }
     }
   ],
