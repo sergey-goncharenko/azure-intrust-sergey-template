@@ -186,8 +186,8 @@
     ],
     "vmSize": [
       "Basic_A1",
-      "Standard_A2",
-      "Standard_A2"
+      "Basic_A2",
+      "Basic_A2"
     ],
     "imageReference": {
       "DC": {
