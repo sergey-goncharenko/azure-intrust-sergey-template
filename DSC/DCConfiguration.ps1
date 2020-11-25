@@ -131,7 +131,7 @@
         {
             Name   = $LogFolder
             Path =  $LogPath
-            Account = $PSComputerAccount,$INTRComputerAccount,$ClientComputerAccount
+            Account = $PSComputerAccount,$INTRComputerAccount#,$ClientComputerAccount
             DependsOn = "[File]ShareFolder"
         }
 
