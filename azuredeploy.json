@@ -185,7 +185,7 @@
       "Standard_LRS"
     ],
     "vmSize": [
-      "Standard_A1_v2",
+      "Basic_A1",
       "Standard_D2_v4",
       "Standard_D2_v4"
     ],
