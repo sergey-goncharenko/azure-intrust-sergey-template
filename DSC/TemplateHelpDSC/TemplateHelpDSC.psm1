@@ -546,7 +546,7 @@ class InstallInTrust
 			Initialize-EnvironmentVariables -commonPsw $admpass -sqlServer $sqlsrv -sqlReportServer $sqlsrv -mailSender $emailfrom -operatorEmail $emailto -serviceAccount $creds
 			$StatusPath = "$cmsourcepath\Installcmd.txt"
             $cmd >> $StatusPath
-		
+			$RelativePath = "InTrust\Server"
 			Install-VCRedist -PackageRootPath $cmsourcepath
 			Install-SQLNativeClient -PackageRootPath $cmsourcepath
 			$cmd="Install-InTrustServer -PackageRootPath $cmsourcepath -username $usernm -Credential $PScreds"
@@ -557,7 +557,9 @@ class InstallInTrust
 
 			Install-InTrustDeploymentManager -PackageRootPath $cmsourcepath
 			Install-InTrustRV -PackageRootPath $cmsourcepath
-			Install-InTrustDefaultKnowledgePacks -PackageRootPath $cmsourcepath
+			#Install-InTrustDefaultKnowledgePacks -PackageRootPath $cmsourcepath
+			#Install-InTrustKnowledgePacks -PackageRootPath $cmsourcepath -RelativePath $RelativePath -WildcardPackName "Linux" 
+			Install-InTrustKnowledgePacks -PackageRootPath $cmsourcepath -RelativePath $RelativePath -WildcardPackName "Linux" 
 			Install-InTrustResourceKit -PackageRootPath $cmsourcepath
 			
 			#Start-Process -Filepath ("$cmsourcepath\Update.exe") -ArgumentList (' /Q') -wait
